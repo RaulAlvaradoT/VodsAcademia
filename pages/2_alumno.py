@@ -46,39 +46,7 @@ def logout():
     st.query_params.clear()
     st.switch_page("app.py")
 
-def mostrar_video_onedrive(url_video):
-    """
-    Muestra el video de OneDrive usando iframe
-    """
-    # Limpiar la URL
-    embed_url = url_video.strip()
-    
-    # Convertir URL 1drv.ms a formato embed si es necesario
-    if '1drv.ms' in embed_url:
-        # Si es una URL corta de 1drv.ms, agregarle parámetros de embed
-        if '?' not in embed_url:
-            embed_url = embed_url + '?embed=1'
-        elif 'embed=' not in embed_url:
-            embed_url = embed_url + '&embed=1'
-    
-    # HTML para el iframe - centrado y con tamaño controlado
-    iframe_html = f"""
-    <div style="display: flex; justify-content: center; width: 100%;">
-        <div style="position: relative; width: 70%; max-width: 900px; padding-bottom: 39.375%; background: #000; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <iframe 
-                src="{embed_url}" 
-                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; border-radius: 8px;"
-                frameborder="0" 
-                scrolling="no" 
-                allowfullscreen
-                allow="autoplay"
-            >
-            </iframe>
-        </div>
-    </div>
-    """
-    
-    st.markdown(iframe_html, unsafe_allow_html=True)
+
 
 def main():
     """Función principal de la vista de alumno"""
@@ -271,9 +239,34 @@ def main():
             
             # Verificar si hay URL de video
             if clase['url_video'] and clase['url_video'].strip():
-                # Mostrar video directamente (ya autenticado al ingresar al módulo)
+                # Botón para abrir video en nueva pestaña
                 st.markdown("### 🎥 Grabación de la Sesión")
-                mostrar_video_onedrive(clase['url_video'])
+                url_video = clase['url_video'].strip()
+                
+                # Crear botón HTML personalizado que abre en nueva pestaña
+                button_html = f"""
+                    <div style="display: flex; justify-content: center; margin: 20px 0;">
+                        <a href="{url_video}" target="_blank" style="text-decoration: none;">
+                            <button style="
+                                background-color: #FF4B4B;
+                                color: white;
+                                padding: 12px 32px;
+                                font-size: 18px;
+                                font-weight: 600;
+                                border: none;
+                                border-radius: 8px;
+                                cursor: pointer;
+                                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                                transition: all 0.3s ease;
+                            " onmouseover="this.style.backgroundColor='#E63946'; this.style.transform='scale(1.05)';" 
+                               onmouseout="this.style.backgroundColor='#FF4B4B'; this.style.transform='scale(1)';">
+                                🎬 Ver Grabación (Nueva Pestaña)
+                            </button>
+                        </a>
+                    </div>
+                """
+                st.markdown(button_html, unsafe_allow_html=True)
+                st.info("💡 El video se abrirá en una nueva pestaña de tu navegador")
             else:
                 # No hay video disponible aún
                 st.info("📹 La grabación de esta sesión se subirá próximamente")
